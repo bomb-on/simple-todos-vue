@@ -3,6 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { TasksCollection } from '../imports/api/TasksCollection';
 import '../imports/api/tasksPublications';
 import '../imports/api/tasksMethods';
+import '../imports/api/testPublications';
+import { TestCollection } from '../imports/api/TestCollection';
 
 const SEED_USERNAME = 'meteorite';
 const SEED_PASSWORD = 'password';
@@ -36,7 +38,23 @@ const createTasks = async () => {
   }
 }
 
+
+const createTestData = async () => {
+  const collectionSize = 10000;
+
+  // Remove all documents if collection doesn't match `collectionSize`
+  if ((await TestCollection.find().countAsync()) !== collectionSize) {
+    await TestCollection.removeAsync({});
+  }
+
+  // Insert dummy data
+  for (let i = 0; i < collectionSize; i++) {
+    await TestCollection.insertAsync({ name: `DOC ####${i}`, created: new Date(), updated: new Date() });
+  }
+}
+
 Meteor.startup(async () => {
   await createFirstUser();
   await createTasks();
+  await createTestData();
 });
